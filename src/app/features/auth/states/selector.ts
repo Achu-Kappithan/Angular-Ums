@@ -17,3 +17,12 @@ export const selectError = createSelector(
     selectUserState,
     (state)=>state.error
 )
+
+export const selectLoggedInUser = createSelector(
+    selectUserState,
+    (state) => state.logedInUser
+);
+export const selectToken = createSelector(
+    selectUserState,
+    (state) => state.jwtToken
+);

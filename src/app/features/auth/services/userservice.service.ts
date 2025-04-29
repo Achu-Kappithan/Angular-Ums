@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import e from 'express';
 
 export interface UserInterface {
   name: string,
@@ -29,6 +30,11 @@ export class UserserviceService {
   registerUser(user:UserInterface){
     console.log("service userdata ",user)
     return this.http.post<any>(`${this.url}/register`,user )
+  }
+
+  loginUser(logininfo:{email:string,password: string}){
+    console.log("service login data",logininfo.email,logininfo.password)
+    return this.http.post<any>(`${this.url}/login`,logininfo)
   }
 
 }
