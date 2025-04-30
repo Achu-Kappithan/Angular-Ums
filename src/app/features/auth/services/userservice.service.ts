@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import e from 'express';
+import { Observable } from 'rxjs';
 
 export interface UserInterface {
   name: string,
@@ -19,6 +19,11 @@ export interface ResponceInterface {
   profile: string
 }
 
+export interface UploadResponse {
+  user: UserInterface;
+  message: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -35,6 +40,19 @@ export class UserserviceService {
   loginUser(logininfo:{email:string,password: string}){
     console.log("service login data",logininfo.email,logininfo.password)
     return this.http.post<any>(`${this.url}/login`,logininfo)
+  }
+
+
+
+
+  uploadProfilePicture(file: File): Observable<{ profilePictureUrl: string }> {
+    const formData = new FormData();
+    console.log(formData, file)
+    formData.append('profilePicture', file);
+    return this.http.post<{ profilePictureUrl: string }>(
+      `${this.url}/profile-picture`,
+      formData
+    );
   }
 
 }

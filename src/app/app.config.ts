@@ -7,12 +7,13 @@ import { provideStore } from '@ngrx/store';
 import {userReducer} from './features/auth/states/reducer'
 import { provideEffects } from '@ngrx/effects';
 import { userEffect } from './features/auth/states/effect';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { authInterceptor } from './shared/interceptor/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), provideClientHydration(withEventReplay()),
     provideStore({userState:userReducer}),
-    provideHttpClient(),
-    provideEffects(userEffect)
+    provideEffects(userEffect),
+    provideHttpClient(withInterceptors([authInterceptor])),
   ]
 };

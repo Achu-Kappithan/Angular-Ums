@@ -26,3 +26,10 @@ export const selectToken = createSelector(
     selectUserState,
     (state) => state.jwtToken
 );
+
+export const selectImageurl = createSelector(
+    selectUserState,
+    (state)=>state.profilePicture
+)
+
+

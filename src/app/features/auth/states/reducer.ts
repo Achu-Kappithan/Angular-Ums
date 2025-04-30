@@ -1,6 +1,5 @@
 import { createReducer, on } from "@ngrx/store"
-import { loginError, loginSucess, loginuUser, signupError, singupSucess, userRegistration } from "./action"
-import { stat } from "fs"
+import { loginError, loginSucess, loginuUser, signupError, singupSucess, updateProfilePicture, updateProfilePictureFailure, updateProfilePictureSuccess, userRegistration } from "./action"
 
 
 
@@ -9,7 +8,8 @@ export interface userState  {
     error : string | null,
     loading: boolean,
     logedInUser: any | null,
-    jwtToken : string | null
+    jwtToken : string | null,
+    profilePicture: string | null
 
 }
 
@@ -18,7 +18,8 @@ const initialState:userState = {
     error: null,
     loading: false,
     logedInUser :null,
-    jwtToken : null
+    jwtToken : null,
+    profilePicture : null
 }
 
 export const userReducer = createReducer(
@@ -71,6 +72,28 @@ export const userReducer = createReducer(
             ...state,
             loading: false,
             error:error
+        }
+    }),
+    on(updateProfilePicture, (state) => {
+        return {
+        ...state,
+        loading: true,
+        error: null,
+        }
+    }),
+    on(updateProfilePictureSuccess,(state,{profilePictureUrl})=>{
+        console.log("responce in reducer url",profilePictureUrl)
+        return{
+        ...state,
+        loading : false,
+        profilePicture: profilePictureUrl
+        }
+    }),
+    on(updateProfilePictureFailure,(state,{error})=>{
+        return {
+            ...state,
+            loading: false,
+            error: error
         }
     })
     

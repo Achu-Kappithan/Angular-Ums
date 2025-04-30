@@ -29,3 +29,21 @@ export const loginError = createAction ('[login component] loginError',
     props<{error: string}>()
 )
 
+
+// file upload
+
+export const updateProfilePicture = createAction(
+    '[User Profile] Update Profile Picture',
+    props<{ file: File }>()
+  );
+  
+  export const updateProfilePictureSuccess = createAction(
+    '[User Profile] Update Profile Picture Success',
+    props<{ profilePictureUrl: string }>()
+  );
+  
+  export const updateProfilePictureFailure = createAction(
+    '[User Profile] Update Profile Picture Failure',
+    props<{ error: string }>()
+  );
+

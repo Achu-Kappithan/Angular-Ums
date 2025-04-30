@@ -1,10 +1,8 @@
 import { inject, Injectable } from "@angular/core";
 import {Actions, createEffect, ofType} from '@ngrx/effects'
-import { loginError, loginSucess, loginuUser, signupError, singupSucess, userRegistration } from "./action";
+import { loginError, loginSucess, loginuUser, signupError, singupSucess, updateProfilePicture, updateProfilePictureFailure, updateProfilePictureSuccess, userRegistration } from "./action";
 import { catchError, map, mergeMap, of, tap } from "rxjs";
 import {UserserviceService} from '../services/userservice.service'
-import { response } from "express";
-import { error } from "console";
 
 
 
@@ -32,21 +30,38 @@ export class userEffect {
     )
 
     userLogin$ = createEffect(() =>
-    this.action$.pipe(
-      ofType(loginuUser),
-      mergeMap((action) =>
-        this.userservice.loginUser({
-            email: action.email,
-            password: action.password
-        }).pipe(
-          tap((response) => console.log('Backend login Response:', response)),
-          map((response) => loginSucess({ 
-              user: response, 
-              jwtToken: response.jwtToken 
-          })),
-          catchError((error) => of(loginError({ error: error.error.message })))
+        this.action$.pipe(
+            ofType(loginuUser),
+            mergeMap((action) =>
+                this.userservice.loginUser({
+                    email: action.email,
+                    password: action.password
+                }).pipe(
+                tap((response) => console.log('Backend login Response:', response)),
+                map((response) => loginSucess({ 
+                    user: response, 
+                    jwtToken: response.jwtToken 
+                })),
+                catchError((error) => of(loginError({ error: error.error.message })))
+                )
+            )
         )
-      )
-    )
-);
+    );
+
+    updateProfilePicture$ = createEffect(() =>
+        this.action$.pipe(
+          ofType(updateProfilePicture),
+          mergeMap((action) =>
+            this.userservice.uploadProfilePicture(action.file).pipe(
+              tap((response) => console.log('Backend image login Response:', response)),
+              map((response: { profilePictureUrl: string }) =>
+                updateProfilePictureSuccess({ profilePictureUrl: response.profilePictureUrl })
+              ),
+              catchError((error) =>
+                of(updateProfilePictureFailure({ error: error.message || 'Failed to upload profile picture' }))
+              )
+            )
+          )
+        )
+    );
 }

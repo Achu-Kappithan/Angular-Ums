@@ -7,6 +7,7 @@ import { loginuUser } from '../../states/action';
 import { selectError, selectLoading, selectLoggedInUser } from '../../states/selector';
 import Swal from 'sweetalert2';
 import { Subject, takeUntil } from 'rxjs';
+import { UserserviceService } from '../../services/userservice.service';
 
 @Component({
   selector: 'app-login',
@@ -37,7 +38,10 @@ export class LoginComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((state) => {
         console.log("userloginstate", state);
-        if (state) {
+        if (state && state.data && state.data.jwtToken) {
+
+          localStorage.setItem('token', state.data.jwtToken);
+
           Swal.fire({
             icon: 'success',
             title: state.message,
@@ -74,6 +78,8 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.loginForm.markAllAsTouched();
     }
   }
+
+  service = inject(UserserviceService)
 
   ngOnDestroy(): void {
     this.destroy$.next();
