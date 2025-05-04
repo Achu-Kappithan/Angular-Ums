@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators, FormGroup } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -12,7 +12,7 @@ import { selectUser, selectError, selectLoading } from '../../states/selector';
 @Component({
   selector: 'app-signup',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, RouterLink],
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.css']
 })
@@ -72,8 +72,10 @@ export class SignupComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    
     if (this.signupform.valid) {
       const { name, email, phoneNumber, password } = this.signupform.value;
+      console.log("submit function works",this.signupform.value)
       this.store.dispatch(userRegistration({ name, email, password, phoneNumber }));
     } else {
       this.signupform.markAllAsTouched();

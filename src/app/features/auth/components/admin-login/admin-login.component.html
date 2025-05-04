@@ -2,9 +2,9 @@
 <div class="bg-gray-100 flex items-center justify-center h-screen">
 
     <div class="bg-white p-8 rounded-lg shadow-md  w-full max-w-md ">
-    <h2 class="text-2xl font-bold mb-6 text-center">Welcome Back</h2>
+    <h2 class="text-2xl font-bold mb-6 text-center">Admin LogIn</h2>
     
-    <form [formGroup]="loginForm"  (ngSubmit)="OnSubmit()">
+    <form [formGroup]="loginForm"  (ngSubmit)="OnSubmitForm()">
         <div class="mb-4">
         <label class="block text-gray-700 mb-2">Email</label>
         <input formControlName="email" type="email" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Enter your email" required />
@@ -23,13 +23,9 @@
             </div>
         </div>
 
-        <div class="mb-4 text-right">
-       
-        <p class="text-sm text-center text-gray-600 mt-4">
-            Continue with new account?
-            <a routerLink="/signup" class="text-sm text-blue-500 hover:underline">SingnUp</a>
-          </p>
-        </div>
+        <!-- <div class="mb-4 text-right">
+        <a href="#" class="text-sm text-blue-500 hover:underline">Forgot password?</a>
+        </div> -->
 
         <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300">Login</button>
     </form>

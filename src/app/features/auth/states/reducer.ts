@@ -1,5 +1,7 @@
 import { createReducer, on } from "@ngrx/store"
-import { loginError, loginSucess, loginuUser, signupError, singupSucess, updateProfilePicture, updateProfilePictureFailure, updateProfilePictureSuccess, userRegistration } from "./action"
+import { adminLogin, adminLoginError, adminLoginSucess, fetchUserError, fetchUsersDetails, fetchUserSucess, getallUsers, getallUsersError, getAllUsersSuccess, loginError, loginSucess, loginuUser, logoutUser, signupError, singupSucess, updateProfilePicture, updateProfilePictureFailure, updateProfilePictureSuccess, userRegistration } from "./action"
+import { NonNullableFormBuilder } from "@angular/forms"
+import { statSync } from "fs"
 
 
 
@@ -9,7 +11,8 @@ export interface userState  {
     loading: boolean,
     logedInUser: any | null,
     jwtToken : string | null,
-    profilePicture: string | null
+    profilePicture: string | null,
+    logedInAdmin:string| null
 
 }
 
@@ -19,7 +22,8 @@ const initialState:userState = {
     loading: false,
     logedInUser :null,
     jwtToken : null,
-    profilePicture : null
+    profilePicture : null,
+    logedInAdmin : null
 }
 
 export const userReducer = createReducer(
@@ -82,7 +86,6 @@ export const userReducer = createReducer(
         }
     }),
     on(updateProfilePictureSuccess,(state,{profilePictureUrl})=>{
-        console.log("responce in reducer url",profilePictureUrl)
         return{
         ...state,
         loading : false,
@@ -95,7 +98,72 @@ export const userReducer = createReducer(
             loading: false,
             error: error
         }
-    })
+    }),
+    on(fetchUsersDetails,(state)=>{
+        return{
+            ...state,
+            loading: true,
+            error: null
+        }
+    }),
+    on(fetchUserSucess,(state,{user})=>{
+        return{
+             ...state,
+             logedInUser :user,
+             error: null,
+             profilePicture:user.user.profile
+
+        }
+    }),
+    on(fetchUserError,(state,{error})=>{
+        return {
+            ...state,
+            error: error,
+            users: null
+        }
+    }),
+    on(adminLoginSucess,(state,{jwtToken})=>{
+        console.log("admin data in reducrer",jwtToken.data.jwtToken)
+        return{
+            ...state,
+            logedInUser:jwtToken,
+            jwtToken: jwtToken
+
+        }
+    }),
+    on(adminLoginError,(state,{error})=>{
+        console.log("admin login error from the reducer",error)
+        return {
+            ...state,
+            error:error.message,
+            logedInUser: null,
+            jwtToken: null
+        }
+    }),
+    on(getallUsers,(state)=>{
+        return{
+            ...state,
+            error: null,
+            loading : true
+        }
+    }),
+    on(getAllUsersSuccess,(state,{user})=>{
+        console.log("responce in the reducer all users",user)
+        return {
+            ...state,
+            users:user,
+            error: null,
+            loading:false
+        }
+    }),
+    on(getallUsersError,(state,{error})=>{
+        return {
+            ...state,
+            users: null,
+            error: error
+        }
+    }),
+    on(logoutUser, () => initialState)
     
 
 )

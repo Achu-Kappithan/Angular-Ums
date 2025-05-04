@@ -1,17 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { loginuUser } from '../../states/action';
-import { selectError, selectLoading, selectLoggedInUser } from '../../states/selector';
+import { selectError, selectLoading, selectLoggedInUser, selectToken } from '../../states/selector';
 import Swal from 'sweetalert2';
 import { Subject, takeUntil } from 'rxjs';
 import { UserserviceService } from '../../services/userservice.service';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule,RouterLink],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -21,12 +21,14 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   store = inject(Store)
   router = inject(Router)
+  route = inject(ActivatedRoute)
   fb = inject(FormBuilder)
   loginForm!: FormGroup
 
-  message$ = this.store.select(selectLoggedInUser)
+  user$ = this.store.select(selectLoggedInUser)
   error$ = this.store.select(selectError)
   loading$ = this.store.select(selectLoading)
+  jwt$ = this.store.select(selectToken)
 
   ngOnInit() {
     this.loginForm = this.fb.group({
@@ -34,24 +36,25 @@ export class LoginComponent implements OnInit, OnDestroy {
       password: ["", [Validators.required, Validators.minLength(6)]]
     });
 
-    this.message$
+    this.user$
       .pipe(takeUntil(this.destroy$))
       .subscribe((state) => {
         console.log("userloginstate", state);
-        if (state && state.data && state.data.jwtToken) {
-
-          localStorage.setItem('token', state.data.jwtToken);
+        if (state && state.success) {
 
           Swal.fire({
             icon: 'success',
             title: state.message,
             timer: 2000,
-            showConfirmButton: false
+            showConfirmButton: false,
+            toast: true,
+            position: 'top-end'
           });
 
           setTimeout(() => {
-            this.router.navigate(['/profile']);
-          }, 2000);
+            const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/profile';
+            this.router.navigate([returnUrl]);
+          },1000);
         }
       });
 
@@ -63,7 +66,9 @@ export class LoginComponent implements OnInit, OnDestroy {
             icon: 'error',
             title: 'Login Failed',
             text: error,
-            confirmButtonColor: '#d33'
+            showConfirmButton: false,
+            toast: true,
+            position: 'top-end'
           });
         }
       });

@@ -1,14 +1,15 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { selectImageurl, selectLoggedInUser } from '../../../auth/states/selector';
+import { selectImageurl, selectLoggedInUser, selectToken } from '../../../auth/states/selector';
 import { CommonModule } from '@angular/common';
-import { UserserviceService } from '../../../auth/services/userservice.service';
-import { updateProfilePicture } from '../../../auth/states/action';
+import { fetchUsersDetails, logoutUser, updateProfilePicture } from '../../../auth/states/action';
 import { Observable } from 'rxjs';
+import { ImageUrlPipe } from '../../../../shared/pipes/image-url.pipe';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-profile',
-  imports: [CommonModule],
+  imports: [CommonModule,ImageUrlPipe],
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.css'
 })
@@ -17,16 +18,20 @@ export class UserProfileComponent  implements OnInit   {
  private store = inject(Store)
  user$ = this.store.select(selectLoggedInUser)
  imageUrl$: Observable<string | null> = this.store.select(selectImageurl);
-
-
+ token$ =this.store.select(selectToken)
+ route = inject(Router)
 
 selectedFile: File | null = null;
 profilePictureUrl: string | null = null;
 
 
 ngOnInit(): void {
+  console.log('ngOnInit triggered - dispatching fetchUsers action');
+
+  this.store.dispatch(fetchUsersDetails()) 
+
   this.imageUrl$.subscribe((url) => {
-    console.log('Image URL from imageUrl$:', url);
+    // console.log('Image URL from imageUrl$:', url);
     this.profilePictureUrl = url  
   });
 }
@@ -47,8 +52,13 @@ uploadProfilePicture(): void {
   console.log("working")
   if (this.selectedFile) {
     this.store.dispatch(updateProfilePicture({ file: this.selectedFile }));
-    this.selectedFile = null; // Reset selected file after dispatch
+    this.selectedFile = null; 
   }
+}
+
+logout(){
+  this.store.dispatch(logoutUser());
+  this.route.navigate(['/login'])
 }
 
 

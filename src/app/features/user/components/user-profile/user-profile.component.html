@@ -15,7 +15,7 @@
             <div class="w-40 h-40 rounded-full border-4 border-gray-100 shadow-sm overflow-hidden">
               <img
                 id="profileImage"
-                [src]="profilePictureUrl "
+                [src]="profilePictureUrl | imageUrl "
                 alt="Profile Picture"
                 class="w-full h-full object-cover"
               />
@@ -50,25 +50,31 @@
               <div>
                 <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Name</h3>
                 <p id="userName" class="mt-1 text-lg font-medium text-gray-900">
-                  {{ user.data.user.name }}
+                  {{ user.user.name }}
                 </p>
               </div>
 
               <!-- Email -->
               <div>
                 <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Email Address</h3>
-                <p id="userEmail" class="mt-1 text-lg text-gray-900">{{ user.data.user.email }}</p>
+                <p id="userEmail" class="mt-1 text-lg text-gray-900">{{ user.user.email }}</p>
               </div>
 
               <!-- Phone -->
               <div>
                 <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Phone Number</h3>
-                <p id="userPhone" class="mt-1 text-lg text-gray-900">{{ user.data.user.phoneNumber }}</p>
+                <p id="userPhone" class="mt-1 text-lg text-gray-900">{{ user.user.phoneNumber }}</p>
               </div>
             </div>
           </div>
+        </div>
+        <div class="p-6 border-b">
+        </div>
+        <div class="flex justify-end">
+          <button (click)="logout()" style="color: red;">Logout</button>
         </div>
       </div>
     </div>
   </div>
 </div>
+

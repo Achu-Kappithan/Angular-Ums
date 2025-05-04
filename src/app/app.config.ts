@@ -9,6 +9,8 @@ import { provideEffects } from '@ngrx/effects';
 import { userEffect } from './features/auth/states/effect';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './shared/interceptor/auth.interceptor';
+// import { getUserReducer } from './features/user/states/reducer';
+// import { UserprofileEffect } from './features/user/states/effect';
 
 export const appConfig: ApplicationConfig = {
   providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), provideClientHydration(withEventReplay()),

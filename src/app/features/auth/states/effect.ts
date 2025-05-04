@@ -1,7 +1,7 @@
 import { inject, Injectable } from "@angular/core";
-import {Actions, createEffect, ofType} from '@ngrx/effects'
-import { loginError, loginSucess, loginuUser, signupError, singupSucess, updateProfilePicture, updateProfilePictureFailure, updateProfilePictureSuccess, userRegistration } from "./action";
-import { catchError, map, mergeMap, of, tap } from "rxjs";
+import { Actions, createEffect, ofType} from '@ngrx/effects'
+import { adminLogin, adminLoginError, adminLoginSucess, fetchUserError, fetchUsersDetails, fetchUserSucess, getallUsers, getallUsersError, getAllUsersSuccess, loginError, loginSucess, loginuUser, logoutSucess, logoutUser, signupError, singupSucess, updateProfilePicture, updateProfilePictureFailure, updateProfilePictureSuccess, userRegistration } from "./action";
+import { catchError, map, mergeMap, of, switchMap, tap } from "rxjs";
 import {UserserviceService} from '../services/userservice.service'
 
 
@@ -37,10 +37,13 @@ export class userEffect {
                     email: action.email,
                     password: action.password
                 }).pipe(
-                tap((response) => console.log('Backend login Response:', response)),
+                tap((response) =>{
+                  localStorage.setItem('jwtToken', response.data.jwtToken)
+                }),
+                
                 map((response) => loginSucess({ 
                     user: response, 
-                    jwtToken: response.jwtToken 
+                    jwtToken: response.data.jwtToken 
                 })),
                 catchError((error) => of(loginError({ error: error.error.message })))
                 )
@@ -64,4 +67,67 @@ export class userEffect {
           )
         )
     );
+
+
+    fetchUser$ = createEffect(()=>
+        this.action$.pipe(
+            ofType(fetchUsersDetails),
+            switchMap(()=>{
+                console.log("effectt works")
+                return this.userservice.getLoggedInUser().pipe(
+                    map((user)=> fetchUserSucess({user})),
+                    catchError(error=> of (fetchUserError({error:error.message})))
+                )
+            })
+        )
+    )
+
+    adminLogin$ = createEffect(() =>
+        this.action$.pipe(
+          ofType(adminLogin),
+          mergeMap(action =>
+            this.userservice.adminLogin({
+              email: action.email,
+              password: action.password
+            }).pipe(
+              tap((responce) =>{ 
+                console.log('Backend admin login Response:', responce)
+                console.log("jtw token",responce.data.jwtToken)
+                localStorage.setItem('jwtToken', responce.data.jwtToken)
+
+              }),
+              map(response => adminLoginSucess({
+                jwtToken: response
+              })),
+              catchError(error => of(adminLoginError({ error: error.error })))
+            )
+          )
+        )
+    );
+      
+    getAllUsers$ = createEffect(() =>
+      this.action$.pipe(
+        ofType(getallUsers),
+        switchMap(() => {
+          console.log('Effect triggered: getAllUsers');
+          return this.userservice.getallUsers().pipe(
+            tap(res => console.log("responce get from all user get",res)),
+            map((users) => getAllUsersSuccess({ user: users })),
+            catchError((error) =>
+              of(getallUsersError({ error: error.message }))
+            )
+          );
+        })
+      )
+    );
+
+    logoutUser$ = createEffect(()=>
+      this.action$.pipe(
+        ofType(logoutUser),
+        tap(()=>{
+          localStorage.clear()
+        }),
+        map(()=> logoutSucess())
+      )
+  )
 }
